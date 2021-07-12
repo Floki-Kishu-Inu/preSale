@@ -34,7 +34,7 @@ contract FLOKIIPreSale is Ownable {
     }
 
     function purchaseByUSDT(uint usdtAmount) public {
-        uint tokenAmount = usdtAmount * usdtPrice;
+        uint tokenAmount = usdtAmount * usdtPrice * (10 ** 9) / (10 ** 6);
         uint tokenBalance = flokii.balanceOf(address(this));
         require(tokenAmount <= tokenBalance, "FLOKIIPreSale: The tokens' balance is insufficient.");
 
@@ -45,7 +45,7 @@ contract FLOKIIPreSale is Ownable {
     }
 
     function purchaseByETH() public payable {
-        uint tokenAmount = msg.value * ethPrice;
+        uint tokenAmount = msg.value * ethPrice * (10 ** 9) / (10 ** 18);
         uint tokenBalance = flokii.balanceOf(address(this));
         require(tokenAmount <= tokenBalance, "FLOKIIPreSale: The tokens' balance is insufficient.");
 

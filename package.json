@@ -21,7 +21,7 @@
     "compile": "truffle compile",
     "deploy-kovan": "truffle migrate --network kovan",
     "verify-kovan": "truffle run verify FlokiKishu FLOKIIPreSale --network kovan",
-    "test": "mocha --exit --recursive",
+    "test": "truffle test --stacktrace",
     "flow-test-kovan": "truffle exec flow.test.js --network kovan"
   },
   "repository": {
