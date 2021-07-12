@@ -67,10 +67,10 @@ module.exports = {
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       settings: {          // See the solidity docs for advice about optimization and evmVersion
        optimizer: {
-         enabled: false,
+         enabled: true,
          runs: 200
        },
-       evmVersion: "byzantium"
+      //  evmVersion: "byzantium"
       }
     }
   },
@@ -83,5 +83,12 @@ module.exports = {
 
   db: {
     enabled: false
+  },
+
+  plugins: [
+    'truffle-plugin-verify'
+  ],
+  api_keys: {
+    etherscan: process.env.ETHERSCAN_API_KEY
   }
 };
