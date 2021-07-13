@@ -33,29 +33,35 @@ contract FLOKIIPreSale is Ownable {
         ethPrice = argEthPrice;
     }
 
-    function purchaseByUSDT(uint usdtAmount) public {
-        uint tokenAmount = usdtAmount * usdtPrice * (10 ** 9) / (10 ** 6);
+    function purchaseByUSDT(uint argUsdtAmount) public {
+        uint tokenAmount = argUsdtAmount * usdtPrice * (10 ** 9) / (10 ** 6);
+        require(tokenAmount > 0, "FLOKIIPreSale: The purchase amount cannot be less than 0.");
         uint tokenBalance = flokii.balanceOf(address(this));
         require(tokenAmount <= tokenBalance, "FLOKIIPreSale: The tokens' balance is insufficient.");
 
-        usdt.safeTransferFrom(msg.sender, address(this), usdtAmount);
+        usdt.safeTransferFrom(msg.sender, address(this), argUsdtAmount);
         flokii.safeTransfer(msg.sender, tokenAmount);
 
         emit Purchase(tokenBalance, PurchaseType.USDT, msg.sender);
     }
 
     function purchaseByETH() public payable {
-        uint tokenAmount = msg.value * ethPrice * (10 ** 9) / (10 ** 18);
+        purchaseByETH(msg.sender, msg.value);
+    }
+
+    function purchaseByETH(address argBuyer, uint argEthValue) private {
+        uint tokenAmount = argEthValue * ethPrice * (10 ** 9) / (10 ** 18);
+        require(tokenAmount > 0, "FLOKIIPreSale: The purchase amount cannot be less than 0.");
         uint tokenBalance = flokii.balanceOf(address(this));
         require(tokenAmount <= tokenBalance, "FLOKIIPreSale: The tokens' balance is insufficient.");
 
-        flokii.safeTransfer(msg.sender, tokenAmount);
+        flokii.safeTransfer(argBuyer, tokenAmount);
 
-        emit Purchase(tokenAmount, PurchaseType.ETH, msg.sender);
+        emit Purchase(tokenAmount, PurchaseType.ETH, argBuyer);
     }
 
-    fallback() external {
-        purchaseByETH();
+    receive() external payable {
+        purchaseByETH(msg.sender, msg.value);
     }
 
     function withdraw() public onlyOwner {

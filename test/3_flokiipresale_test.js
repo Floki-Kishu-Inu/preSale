@@ -50,10 +50,10 @@ contract("Pre-sale test.", async accounts => {
                                                     .add(flokiiBalance1);
         const flokiiBalance2 = await flokii.balanceOf(accounts[0]);
 
-        console.log("real amount 1: " + flokiiBalance1);
-        console.log("expected 1: " + expectedFlokiiAmount1);
-        console.log("expected 2: " + expectedFlokiiAmount2);
-        console.log("real amount 2: " + flokiiBalance2);
+        // console.log("real amount 1: " + flokiiBalance1);
+        // console.log("expected 1: " + expectedFlokiiAmount1);
+        // console.log("expected 2: " + expectedFlokiiAmount2);
+        // console.log("real amount 2: " + flokiiBalance2);
 
         assert.equal(flokiiBalance2.cmp(expectedFlokiiAmount1), 1);
         assert.equal(flokiiBalance2.cmp(expectedFlokiiAmount2), -1);
@@ -69,36 +69,113 @@ contract("Pre-sale test.", async accounts => {
 
         const flokiiBalance1 = await flokii.balanceOf(accounts[0]);
 
-        const ethBalance = await web3.eth.getBalance(accounts[0]);
-        const transferAmount = new BN('1000000000000000000');
+        const strEthBalance = await web3.eth.getBalance(accounts[0]);
+        const transferAmount = new BN('100000000000'); // 0.0000001 ether
 
-        var flokiiBalanceInPresale = await flokii.balanceOf(presale.address);
-        console.log("left balance : " + flokiiBalanceInPresale.toString());
+        // var flokiiBalanceInPresale = await flokii.balanceOf(presale.address);
+        // console.log("left balance : " + flokiiBalanceInPresale.toString());
 
         var tx = await presale.purchaseByETH({from : accounts[0], value : transferAmount});
 
-        const ethBalance1 = await web3.eth.getBalance(accounts[0]);
+        const strEthBalance1 = await web3.eth.getBalance(accounts[0]);
+
+        var ethBalance = new BN(strEthBalance);
+        var ethBalance1 = new BN(strEthBalance1);
+
         assert.equal(ethBalance.sub(ethBalance1).cmp(transferAmount), 1);
 
         const ethPrice = await presale.ethPrice();
-        const expectedFlokiiAmount1 = transferAmount.div(new BN('1000000000000000000'))
-                                                    .mul(ethPrice)
+        const expectedFlokiiAmount1 = transferAmount.mul(ethPrice)
                                                     .mul(new BN('1000000000'))
+                                                    .div(new BN('1000000000000000000'))
                                                     .muln(98).divn(100)
                                                     .add(flokiiBalance1);
-        const expectedFlokiiAmount2 = transferAmount.div(new BN('1000000000000000000'))
-                                                    .mul(ethPrice)
+        const expectedFlokiiAmount2 = transferAmount.mul(ethPrice)
                                                     .mul(new BN('1000000000'))
+                                                    .div(new BN('1000000000000000000'))
                                                     // .muln(98).divn(100)
                                                     .add(flokiiBalance1);
         const flokiiBalance2 = await flokii.balanceOf(accounts[0]);
 
-        console.log("real amount 1: " + flokiiBalance1);
-        console.log("expected 1: " + expectedFlokiiAmount1);
-        console.log("expected 2: " + expectedFlokiiAmount2);
-        console.log("real amount 2: " + flokiiBalance2);
+        // console.log("real amount 1: " + flokiiBalance1);
+        // console.log("expected 1: " + expectedFlokiiAmount1);
+        // console.log("expected 2: " + expectedFlokiiAmount2);
+        // console.log("real amount 2: " + flokiiBalance2);
+        // console.log("got amount: " + flokiiBalance2.sub(flokiiBalance1));
 
         assert.equal(flokiiBalance2.cmp(expectedFlokiiAmount1), 1);
         assert.equal(flokiiBalance2.cmp(expectedFlokiiAmount2), -1);
+    });
+
+    it("Test purchase by sending ETH", async() => {
+        const presale = await FLOKIIPreSale.deployed();
+        const flokii = await FlokiKishu.deployed();
+
+        await flokii.transfer(accounts[1], new BN('1000000000000000000'));
+        await flokii.transfer(accounts[2], new BN('1000000000000000000'));
+        await flokii.transfer(accounts[3], new BN('1000000000000000000'));
+
+        const flokiiBalance1 = await flokii.balanceOf(accounts[0]);
+
+        const transferAmount = new BN('99000000000000000000'); // 99 ether
+        
+        var tx = await web3.eth.sendTransaction({from:accounts[0], to:presale.address, value : transferAmount});
+        // console.log("sending eth: " + tx.hash);
+
+        const ethPrice = await presale.ethPrice();
+        const expectedFlokiiAmount1 = transferAmount.mul(ethPrice)
+                                                    .mul(new BN('1000000000'))
+                                                    .div(new BN('1000000000000000000'))
+                                                    .muln(98).divn(100)
+                                                    .add(flokiiBalance1);
+        const expectedFlokiiAmount2 = transferAmount.mul(ethPrice)
+                                                    .mul(new BN('1000000000'))
+                                                    .div(new BN('1000000000000000000'))
+                                                    // .muln(98).divn(100)
+                                                    .add(flokiiBalance1);
+        const flokiiBalance2 = await flokii.balanceOf(accounts[0]);
+
+        // console.log("real amount 1: " + flokiiBalance1);
+        // console.log("expected 1: " + expectedFlokiiAmount1);
+        // console.log("expected 2: " + expectedFlokiiAmount2);
+        // console.log("real amount 2: " + flokiiBalance2);
+        // console.log("got amount: " + flokiiBalance2.sub(flokiiBalance1));
+
+        assert.equal(flokiiBalance2.cmp(expectedFlokiiAmount1), 1);
+        assert.equal(flokiiBalance2.cmp(expectedFlokiiAmount2), -1);
+    });
+
+    it("Test withdraw", async() => {
+        const presale = await FLOKIIPreSale.deployed();
+        const flokii = await FlokiKishu.deployed();
+        const usdt = await TetherUSD.deployed();
+
+        const withdrawableUSDT = await usdt.balanceOf(presale.address);
+        const eBalance = await web3.eth.getBalance(presale.address);
+        const withdrawableETH = new BN(eBalance);
+
+        const usdtBalance1 = await usdt.balanceOf(accounts[0]);
+        var b = await web3.eth.getBalance(accounts[0]);
+        const ethBalance1 = new BN(b);
+
+        // Withdraw
+        var tx = await presale.withdraw({from:accounts[0]});
+
+        var gasprice = new BN('20000000000'); // 20 gwei
+        var gasUsed = new BN(tx.receipt.gasUsed);
+        var minerFee = gasprice.mul(gasUsed);
+        // console.log("miner fee: " + minerFee.toString());
+
+        const usdtBalance2 = await usdt.balanceOf(accounts[0]);
+        b = await web3.eth.getBalance(accounts[0]);
+        const ethBalance2 = new BN(b);
+
+        // console.log("eth balance 1: " + ethBalance1.toString());
+        // console.log("eth withdrawable: " + withdrawableETH.toString());
+        // console.log("eth balance 2: " + ethBalance2.toString());
+        // console.log("real miner fee: " + ethBalance1.add(withdrawableETH).sub(ethBalance2).toString());
+
+        assert.equal(usdtBalance1.add(withdrawableUSDT).cmp(usdtBalance2), 0);
+        assert.equal(ethBalance1.add(withdrawableETH).cmp(ethBalance2.add(minerFee)), 0);
     });
 });
