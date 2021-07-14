@@ -19,10 +19,11 @@
   },
   "scripts": {
     "compile": "truffle compile",
+    "deploy-mainnet": "truffle migrate --network mainnet",
     "deploy-kovan": "truffle migrate --network kovan",
+    "verify-mainnet": "truffle run verify FlokiKishu FLOKIIPreSale --network mainnet",
     "verify-kovan": "truffle run verify FlokiKishu FLOKIIPreSale --network kovan",
-    "test": "truffle test --stacktrace",
-    "flow-test-kovan": "truffle exec flow.test.js --network kovan"
+    "test": "truffle test --stacktrace"
   },
   "repository": {
     "type": "git",

@@ -38,16 +38,13 @@ contract("Pre-sale test.", async accounts => {
         assert.equal(usdtBalance.sub(usdtBalance1).toString(), transferAmount.toString());
 
         const usdtPrice = await presale.usdtPrice();
-        const expectedFlokiiAmount1 = transferAmount.div(new BN('1000000'))
-                                                    .mul(usdtPrice)
-                                                    .mul(new BN('1000000000'))
-                                                    .muln(98).divn(100)
-                                                    .add(flokiiBalance1);
-        const expectedFlokiiAmount2 = transferAmount.div(new BN('1000000'))
-                                                    .mul(usdtPrice)
-                                                    .mul(new BN('1000000000'))
-                                                    // .muln(98).divn(100)
-                                                    .add(flokiiBalance1);
+        var flokiiAmount = transferAmount.mul(usdtPrice)
+                                            .mul(new BN('1000000000'))
+                                            .div(new BN('1000000'));
+        flokiiAmount = flokiiAmount.divn(2).add(flokiiAmount);
+        const expectedFlokiiAmount1 = flokiiAmount.muln(98).divn(100)
+                                                  .add(flokiiBalance1);
+        const expectedFlokiiAmount2 = flokiiAmount.add(flokiiBalance1);
         const flokiiBalance2 = await flokii.balanceOf(accounts[0]);
 
         // console.log("real amount 1: " + flokiiBalance1);
@@ -85,16 +82,13 @@ contract("Pre-sale test.", async accounts => {
         assert.equal(ethBalance.sub(ethBalance1).cmp(transferAmount), 1);
 
         const ethPrice = await presale.ethPrice();
-        const expectedFlokiiAmount1 = transferAmount.mul(ethPrice)
-                                                    .mul(new BN('1000000000'))
-                                                    .div(new BN('1000000000000000000'))
-                                                    .muln(98).divn(100)
-                                                    .add(flokiiBalance1);
-        const expectedFlokiiAmount2 = transferAmount.mul(ethPrice)
-                                                    .mul(new BN('1000000000'))
-                                                    .div(new BN('1000000000000000000'))
-                                                    // .muln(98).divn(100)
-                                                    .add(flokiiBalance1);
+        var flokiiAmount = transferAmount.mul(ethPrice)
+                                            .mul(new BN('1000000000'))
+                                            .div(new BN('1000000000000000000'));
+        flokiiAmount = flokiiAmount.divn(2).add(flokiiAmount);
+        const expectedFlokiiAmount1 = flokiiAmount.muln(98).divn(100)
+                                                  .add(flokiiBalance1);
+        const expectedFlokiiAmount2 = flokiiAmount.add(flokiiBalance1);
         const flokiiBalance2 = await flokii.balanceOf(accounts[0]);
 
         // console.log("real amount 1: " + flokiiBalance1);
@@ -123,16 +117,13 @@ contract("Pre-sale test.", async accounts => {
         // console.log("sending eth: " + tx.hash);
 
         const ethPrice = await presale.ethPrice();
-        const expectedFlokiiAmount1 = transferAmount.mul(ethPrice)
-                                                    .mul(new BN('1000000000'))
-                                                    .div(new BN('1000000000000000000'))
-                                                    .muln(98).divn(100)
-                                                    .add(flokiiBalance1);
-        const expectedFlokiiAmount2 = transferAmount.mul(ethPrice)
-                                                    .mul(new BN('1000000000'))
-                                                    .div(new BN('1000000000000000000'))
-                                                    // .muln(98).divn(100)
-                                                    .add(flokiiBalance1);
+        var flokiiAmount = transferAmount.mul(ethPrice)
+                                        .mul(new BN('1000000000'))
+                                        .div(new BN('1000000000000000000'));
+        flokiiAmount = flokiiAmount.divn(2).add(flokiiAmount);
+        const expectedFlokiiAmount1 = flokiiAmount.muln(98).divn(100)
+                                                  .add(flokiiBalance1);
+        const expectedFlokiiAmount2 = flokiiAmount.add(flokiiBalance1);
         const flokiiBalance2 = await flokii.balanceOf(accounts[0]);
 
         // console.log("real amount 1: " + flokiiBalance1);
