@@ -10,8 +10,8 @@ module.exports = async function (deployer, network, accounts) {
     var argFlokii = flokii.address;
     var argUsdt = "";
     var argAdmin = accounts[0];
-    var argUsdtPrice = new BigNumber(100); // 0.01 USDT
-    var argEthPrice = new BigNumber(200000); // 0.000005 ETH
+    var argUsdtPrice = new BigNumber(143); // 0.007 USDT per FLOKII
+    var argEthPrice = new BigNumber(306020);
 
     if(network == 'mainnet') {
         argUsdt = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
